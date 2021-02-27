@@ -61,7 +61,7 @@ router.post('/signin', function (req, res) {
     if (!user) {
         res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
     } else {
-        if (req.body.password == user.password) {
+        if (req.body.password === user.password) {
             var userToken = { id: user.id, username: user.username };
             var token = jwt.sign(userToken, process.env.SECRET_KEY);
             res.json ({success: true, token: 'JWT ' + token});
@@ -70,32 +70,47 @@ router.post('/signin', function (req, res) {
             res.status(401).send({success: false, msg: 'Authentication failed.'});
         }
     }
+
 });
+router.get('/movies', function(req, res) {
+    res.json({status: 200, msg: 'GET movies', headers: req.headers, query: req.query, env: process.env.UNIQUE_KEY});
+});
+router.post('/movies', function(req,res){
+    res.json({status: 200, msg: 'movie saved', headers: req.headers, query: req.query, env: process.env.UNIQUE_KEY});
+});
+router.put('/movies', authJwtController.isAuthenticated, function(req,res){
+    res.json({status: 200, msg: 'movie updated', headers: req.headers, query: req.query, env: process.env.UNIQUE_KEY});
+});
+router.delete('/movies', authController.isAuthenticated, function(req,res){
+    res.json({status: 200, msg: 'movie deleted', headers: req.headers, query: req.query, env: process.env.UNIQUE_KEY});
+});
+
+
 
 router.route('/testcollection')
     .delete(authController.isAuthenticated, function(req, res) {
-        console.log(req.body);
-        res = res.status(200);
-        if (req.get('Content-Type')) {
-            res = res.type(req.get('Content-Type'));
+            console.log(req.body);
+            res = res.status(200);
+            if (req.get('Content-Type')) {
+                res = res.type(req.get('Content-Type'));
+            }
+            var o = getJSONObjectForMovieRequirement(req);
+            res.json(o);
         }
-        var o = getJSONObjectForMovieRequirement(req);
-        res.json(o);
-    }
     )
     .put(authJwtController.isAuthenticated, function(req, res) {
-        console.log(req.body);
-        res = res.status(200);
-        if (req.get('Content-Type')) {
-            res = res.type(req.get('Content-Type'));
+            console.log(req.body);
+            res = res.status(200);
+            if (req.get('Content-Type')) {
+                res = res.type(req.get('Content-Type'));
+            }
+            var o = getJSONObjectForMovieRequirement(req);
+            res.json(o);
         }
-        var o = getJSONObjectForMovieRequirement(req);
-        res.json(o);
-    }
     );
+
+
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
 module.exports = app; // for testing only
-
-

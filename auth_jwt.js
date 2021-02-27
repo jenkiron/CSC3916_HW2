@@ -1,6 +1,8 @@
+
 var passport = require('passport');
 var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
+//require('dotenv').config();
 
 var opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("jwt");
@@ -17,4 +19,4 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
 }));
 
 exports.isAuthenticated = passport.authenticate('jwt', { session : false });
-exports.secret = opts.secretOrKey ;
+exports.secret = opts.secretOrKey;
